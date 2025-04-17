@@ -1,0 +1,139 @@
+local Library = {}
+local LibraryName = tostring(math.random(100000,200000))..tostring(math.random(100000,200000))..tostring(math.random(100000,200000))
+
+function Library:Toggle()
+    if game.CoreGui:FindFirstChild(LibraryName).Enabled then 
+        game.CoreGui:FindFirstChild(LibraryName).Enabled = false
+    else 
+        game.CoreGui:FindFirstChild(LibraryName).Enabled = true
+    end
+end
+
+function Library:Drag(obj)
+    local UserInputService = game:GetService("UserInputService")
+    local gui = obj
+    local dragging, dragInput, dragStart, startPos
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        gui.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+
+    gui.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = gui.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
+        end
+    end)
+
+    gui.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then update(input) end
+    end)
+end
+
+function Library:Create(xHubName,xGameName)
+    local xHubName = xHubName or "simple"
+    local xGameName = xGameName or "@kdxvs -- dc"
+
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = LibraryName
+    ScreenGui.Parent = game.CoreGui
+    ScreenGui.ResetOnSpawn = false
+
+    local Main = Instance.new("Frame")
+    Main.Name = "Main"
+    Main.Parent = ScreenGui
+    Main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    Main.Position = UDim2.new(0.3, 0, 0.3, 0)
+    Main.Size = UDim2.new(0, 580, 0, 370)
+    Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
+
+    local Sidebar = Instance.new("Frame")
+    Sidebar.Name = "Sidebar"
+    Sidebar.Parent = Main
+    Sidebar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Sidebar.Size = UDim2.new(0, 140, 0, 370)
+    Instance.new("UICorner", Sidebar)
+
+    local Filler = Instance.new("Frame")
+    Filler.Parent = Sidebar
+    Filler.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Filler.BorderSizePixel = 0
+    Filler.Position = UDim2.new(0.930, 0, 0, 0)
+    Filler.Size = UDim2.new(0, 9, 0, 370)
+
+    local HubName = Instance.new("TextLabel")
+    HubName.Parent = Sidebar
+    HubName.BackgroundTransparency = 1
+    HubName.Position = UDim2.new(0, 0, 0.025, 0)
+    HubName.Size = UDim2.new(0, 140, 0, 21)
+    HubName.Font = Enum.Font.Gotham
+    HubName.Text = xHubName
+    HubName.TextColor3 = Color3.fromRGB(255, 255, 255)
+    HubName.TextSize = 16
+
+    local GameName = Instance.new("TextLabel")
+    GameName.Parent = Sidebar
+    GameName.BackgroundTransparency = 1
+    GameName.Position = UDim2.new(0, 0, 0.08, 0)
+    GameName.Size = UDim2.new(0, 141, 0, 25)
+    GameName.Font = Enum.Font.Gotham
+    GameName.Text = xGameName
+    GameName.TextColor3 = Color3.fromRGB(180, 180, 180)
+    GameName.TextSize = 14
+
+    local Line = Instance.new("Frame")
+    Line.Parent = Sidebar
+    Line.Position = UDim2.new(0.06, 0, 0.15, 0)
+    Line.Size = UDim2.new(0, 121, 0, 2)
+    Line.BorderSizePixel = 0
+    Line.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+
+    local ActualSide = Instance.new("ScrollingFrame")
+    ActualSide.Name = "ActualSide"
+    ActualSide.Parent = Sidebar
+    ActualSide.BackgroundTransparency = 1
+    ActualSide.BorderSizePixel = 0
+    ActualSide.Position = UDim2.new(0, 0, 0.17, 0)
+    ActualSide.Size = UDim2.new(0, 139, 0, 297)
+    ActualSide.ScrollBarThickness = 0
+
+    local ActualSideListLayout = Instance.new("UIListLayout")
+    ActualSideListLayout.Parent = ActualSide
+    ActualSideListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+    local SideLine = Instance.new("Frame")
+    SideLine.Parent = Sidebar
+    SideLine.Position = UDim2.new(1, 0, 0, 0)
+    SideLine.Size = UDim2.new(0, 2, 0, 370)
+    SideLine.BorderSizePixel = 0
+    SideLine.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+
+    local TabHolder = Instance.new("Frame")
+    TabHolder.Name = "TabHolder"
+    TabHolder.Parent = Main
+    TabHolder.BackgroundTransparency = 1
+    TabHolder.BorderSizePixel = 0
+    TabHolder.Position = UDim2.new(0.2448, 0, 0.024, 0)
+    TabHolder.Size = UDim2.new(0, 438, 0, 352)
+
+    local Tabs = Instance.new("Folder")
+    Tabs.Name = "Tabs"
+    Tabs.Parent = TabHolder
+
+    Library:Drag(Main)
+
+    return {}
+end
+
+return Library
